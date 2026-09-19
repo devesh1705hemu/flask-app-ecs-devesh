@@ -1,0 +1,43 @@
+# Main purpose of create the Dockerfile.multistage to reduce the size of the images, once it build then we can run it in a small size of image instead of using a large size image.
+
+#  Builder Stage
+
+
+# Build Stage
+FROM python:3.14-slim AS builder
+
+#Working directory of the builder
+WORKDIR /app
+
+# Copy dependency file first for efficient caching
+COPY requirements.txt .
+
+#install all the dependencies
+RUN pip install --no-cache-dir -r requirements.txt --target=/app/deps
+
+# Copy application source code
+COPY . .
+
+#--------------------Stage 1  complete -------------
+
+# Runner stage 
+
+# Final Distroless Stage
+FROM gcr.io/distroless/python3-debian12
+
+
+WORKDIR /app
+
+# Copy dependencies from the builder stage
+COPY --from=builder /app/deps /app/deps
+COPY --from=builder /app .
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONPATH="/app/deps"
+
+# Expose the application port
+EXPOSE 80
+
+# Run the application
+CMD ["run.py"]
