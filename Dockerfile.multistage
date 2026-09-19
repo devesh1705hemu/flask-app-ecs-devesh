@@ -1,4 +1,5 @@
-# Main purpose of create the Dockerfile.multistage to reduce the size of the images, once it build then we can run it in a small size of image instead of using a large size image.
+# Main purpose of create the Dockerfile.multistage to reduce the size of the images, 
+once it build then we can run it in a small size of image instead of using a large size image.
 
 #  Builder Stage
 
